@@ -1,50 +1,48 @@
-# Site Web BDD
+Site Web Bénévoles du Développement Durable (BDD)
+Site web pour une association écologique fictive, permettant aux utilisateurs de participer à des activités, relever des défis et gagner des éco-points.
+Fonctionnalités
 
-Backend Go pour un site web axé sur l'écologie, avec inscription des utilisateurs, activités, défis et tableau de bord des éco-points.
+Inscription et authentification des utilisateurs
+Participation aux activités et défis écologiques
+Système d'éco-points et de badges
+Formulaire de contact
+Tableau de bord utilisateur
+Interface d'administration
 
-## Fonctionnalités clés
+Technologies
+Backend:
 
-- Inscription et authentification des utilisateurs avec JWT
-- Opérations CRUD pour les activités et les défis
-- Participation des utilisateurs aux activités et aux défis
-- Système d'éco-points et récompenses sous forme de badges
-- Tableau de bord administrateur pour gérer le contenu et les utilisateurs
-- Formulaire de contact pour la communication avec les utilisateurs
+Go 1.23
+SQLite3
+Gorilla Mux
+JWT
 
-## Stack technologique
+Frontend:
 
-- Go 1.23.0
-- Base de données SQLite3
-- Routeur Gorilla Mux
-- JWT pour l'authentification
+HTML
+CSS
+JavaScript
 
-## Installation
+Structure du projet
 
-1. Clonez le dépôt
-2. Installez les dépendances : `go mod download`
-3. Compilez le projet : `go build`
-4. Lancez le serveur : `./bdd-website`
+backend/ : Code source Go du backend
+frontend/ : Pages web statiques du frontend
 
-Le serveur démarrera sur le port 8080 par défaut. Vous pouvez changer le port et d'autres configurations dans `config/config.go`.
+css/ : Feuilles de style CSS
+js/ : Scripts JavaScript
+images/ : Images et icônes
 
-## Structure du projet
 
-- `cmd/` : Point d'entrée principal de l'application
-- `config/` : Chargement de la configuration
-- `internal/` :
-  - `database/` : Connexion à la base de données et requêtes
-  - `handlers/` : Gestionnaires HTTP
-  - `middleware/` : Middleware personnalisé
-  - `models/` : Modèles et structures de données
-  - `utils/` : Fonctions utilitaires
-- `migrations/` : Scripts de migration de la base de données
-- `templates/` : Templates HTML
-- `assets/` : Ressources statiques (CSS, JS, images)
+db/ : Fichier de base de données SQLite
+docs/ : Documentation utilisateur et technique
 
-## Points d'accès API
+Installation
 
-Reportez-vous au code dans `internal/handlers/` pour la liste complète des points d'accès API et leurs fonctionnalités.
+Clonez le dépôt
+Installez Go et les dépendances backend
+Compilez et lancez le backend
+Ouvrez les pages frontend dans un navigateur
 
-## Licence
-
-Ce projet est open-source sous la [Licence MIT](LICENSE).
+Voir docs/installation.md pour des instructions détaillées.
+Licence
+Projet open-source sous licence MIT.
