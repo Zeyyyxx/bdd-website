@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDD - Inscription</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="/assets/js/auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="/assets/images/logo.svg" alt="Logo BDD">
+                BDD
+            </a>
+            <nav>
+                <a href="/">Accueil</a>
+                <a href="/about">Qui sommes-nous ?</a>
+                <a href="/contact">Contact</a>
+                <a href="/activities">Actualités</a>
+                <span id="auth-links">
+                    <a href="/login">Connexion</a>
+                    <a href="/signup" class="active">Inscription</a>
+                    <a href="#" id="logout-link" style="display:none;">Déconnexion</a>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="form-container">
+            <form id="signup-form" class="card">
+                <h1>Créer un compte</h1>
+                
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required>
+                    <small class="form-text text-muted">Le mot de passe doit contenir au moins 6 caractères</small>
+                </div>
+                
+                <div id="error-message" class="alert alert-danger" style="display:none;"></div>
+                
+                <button type="submit" class="btn btn-primary">S'inscrire</button>
+                
+                <p class="text-center mt-3">
+                    Déjà inscrit ? <a href="/login">Connectez-vous</a>
+                </p>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 BDD - Bureau du Développement Durable</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessageEl = document.getElementById('error-message');
+            
+            // Reset error message
+            errorMessageEl.textContent = '';
+            errorMessageEl.style.display = 'none';
+            
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, email, password })
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Erreur d\'inscription');
+                }
+                return data;
+            })
+            .then(data => {
+                alert('Inscription réussie !');
+                window.location.href = '/login';
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                errorMessageEl.textContent = error.message;
+                errorMessageEl.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>

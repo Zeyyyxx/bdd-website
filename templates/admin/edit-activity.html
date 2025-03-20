@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditer une activité</title>
+    <!-- CSS a mettre -->
+</head>
+<body>
+    <header>
+        <h1>Éditer une activité</h1>
+        <nav>
+            <ul>
+                <li><a href="/admin/dashboard">Retour au tableau de bord</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Formulaire d'édition</h2>
+        <form action="/admin/activities/edit" method="POST">
+            <label for="title">Titre de l'activité</label>
+            <input type="text" id="title" name="title" value="Titre existant" required>
+
+            <label for="description">Description</label>
+            <textarea id="description" name="description" required>Texte existant</textarea>
+
+            <label for="date">Date de l'activité</label>
+            <input type="date" id="date" name="date" value="2025-03-20" required>
+
+            <button type="submit">Mettre à jour</button>
+        </form>
+    </section>
+</body>
+</html>

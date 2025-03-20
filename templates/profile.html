@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - BDD</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="/assets/js/auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="/assets/images/logo.svg" alt="Logo BDD">
+                BDD
+            </a>
+            <nav>
+                <a href="/">Accueil</a>
+                <a href="/about">Qui sommes-nous ?</a>
+                <a href="/contact">Contact</a>
+                <a href="/activities">Actualités</a>
+                <span id="auth-links">
+                    <a href="/login" id="login-link">Connexion</a>
+                    <a href="/signup" id="signup-link">Inscription</a>
+                    <a href="#" id="logout-link" style="display:none;">Déconnexion</a>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>Mon Profil</h1>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Informations Personnelles</h2>
+                        <form id="profile-form">
+                            <div class="form-group">
+                                <label for="username">Nom d'utilisateur</label>
+                                <input type="text" id="username" name="username" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Nouveau mot de passe (optionnel)</label>
+                                <input type="password" id="password" name="password">
+                                <small class="form-text text-muted">Laissez vide si vous ne souhaitez pas changer votre mot de passe</small>
+                            </div>
+                            
+                            <div id="profile-error" class="alert alert-danger" style="display:none;"></div>
+                            
+                            <button type="submit" class="btn">Mettre à jour le profil</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Tableau de Bord Écologique</h2>
+                        
+                        <div class="dashboard-stats">
+                            <div class="stat-card">
+                                <h3>Points Écologiques</h3>
+                                <p id="total-points" class="stat-value">0</p>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <h3>Activités</h3>
+                                <p id="activity-count" class="stat-value">0</p>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <h3>Badges</h3>
+                                <p id="badge-count" class="stat-value">0</p>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <h3>Classement</h3>
+                                <p id="user-ranking" class="stat-value">N/A</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h2 class="card-title">Mes Activités</h2>
+                <div id="user-activities">
+                    <p id="no-activities" style="display:none;">Vous n'êtes inscrit à aucune activité pour le moment.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 BDD - Bureau du Développement Durable</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Redirect to login if not authenticated
+            if (!requireAuth()) return;
+
+            // Profile update form
+            const profileForm = document.getElementById('profile-form');
+            const profileError = document.getElementById('profile-error');
+
+            // Fetch and populate user profile
+            function loadUserProfile() {
+                fetch('/api/users/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+                .then(response => response.json())
+                .then(profile => {
+                    document.getElementById('username').value = profile.username;
+                    document.getElementById('email').value = profile.email;
+                    
+                    // Update eco dashboard
+                    document.getElementById('total-points').textContent = profile.total_eco_points || 0;
+                    document.getElementById('activity-count').textContent = profile.activity_count || 0;
+                    document.getElementById('badge-count').textContent = profile.badge_count || 0;
+                })
+                .catch(error => {
+                    console.error('Erreur de chargement du profil:', error);
+                    alert('Impossible de charger les informations du profil');
+                });
+            }
+
+            // Load user activities
+            function loadUserActivities() {
+                fetch('/api/users/registrations', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const activitiesContainer = document.getElementById('user-activities');
+                    const noActivitiesMessage = document.getElementById('no-activities');
+
+                    if (data.activities.length === 0) {
+                        noActivitiesMessage.style.display = 'block';
+                    } else {
+                        noActivitiesMessage.style.display = 'none';
+                        
+                        const activitiesHTML = data.activities.map(activity => `
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h3 class="card-title">${activity.title}</h3>
+                                    <p class="card-text">${activity.description}</p>
+                                    <div class="activity-details">
+                                        <span><strong>Lieu:</strong> ${activity.location}</span>
+                                        <span><strong>Date:</strong> ${new Date(activity.start_date).toLocaleDateString()}</span>
+                                        <span class="badge badge-success">${activity.eco_points} points</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+
+                        activitiesContainer.innerHTML = activitiesHTML;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur de chargement des activités:', error);
+                });
+            }
+
+            // Initial load of profile and activities
+            loadUserProfile();
+            loadUserActivities();
+
+            // Profile update submission
+            profileForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // Reset error message
+                profileError.textContent = '';
+                profileError.style.display = 'none';
+
+                // Prepare update data
+                const updateData = { username, email };
+                if (password) updateData.password = password;
+
+                fetch('/api/users/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(updateData)
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Erreur de mise à jour du profil');
+                    }
+                    alert('Profil mis à jour avec succès');
+                    loadUserProfile(); // Reload profile data
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    profileError.textContent = error.message;
+                    profileError.style.display = 'block';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

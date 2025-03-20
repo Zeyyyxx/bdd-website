@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDD - Inscription</title>
+    <link href="/assets/css/tailwind.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <nav class="bg-white shadow-md p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center">
+                <img src="/assets/images/logo.svg" alt="Logo BDD" class="h-10 mr-4">
+                <span class="text-xl font-bold text-green-600">BDD</span>
+            </a>
+            <div class="space-x-4">
+                <a href="/activities" class="text-gray-700 hover:text-green-600">Activités</a>
+                <a href="/about" class="text-gray-700 hover:text-green-600">Qui sommes-nous</a>
+                <a href="/login" class="text-gray-700 hover:text-green-600">Connexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
+        <div class="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
+            <h1 class="text-2xl font-bold mb-6 text-center">Inscription</h1>
+            
+            <form id="signup-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-gray-700 font-bold mb-2">Nom d'utilisateur</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        required 
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-gray-700 font-bold mb-2">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required 
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-gray-700 font-bold mb-2">Mot de passe</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                </div>
+                
+                <div id="error-message" class="text-red-500 text-sm hidden"></div>
+                
+                <button 
+                    type="submit" 
+                    class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300"
+                >
+                    S'inscrire
+                </button>
+            </form>
+            
+            <p class="text-center mt-4">
+                Déjà inscrit ? 
+                <a href="/login" class="text-green-600 hover:underline">Connectez-vous ici</a>
+            </p>
+        </div>
+    </div>
+
+    <footer class="bg-green-800 text-white py-4">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 BDD - Bureau du Développement Durable</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessageEl = document.getElementById('error-message');
+            
+            errorMessageEl.textContent = '';
+            errorMessageEl.classList.add('hidden');
+            
+            const data = { username, email, password };
+            
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Erreur lors de l\'inscription');
+                }
+                return data;
+            })
+            .then(data => {
+                alert('Inscription réussie !');
+                window.location.href = '/login';
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                errorMessageEl.textContent = error.message;
+                errorMessageEl.classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

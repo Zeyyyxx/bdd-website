@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDD - Actualités</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="/assets/js/auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="/assets/images/logo.svg" alt="Logo BDD">
+                BDD
+            </a>
+            <nav>
+                <a href="/">Accueil</a>
+                <a href="/about">Qui sommes-nous ?</a>
+                <a href="/contact">Contact</a>
+                <a href="/activities" class="active">Actualités</a>
+                <span id="auth-links">
+                    <a href="/login" id="login-link">Connexion</a>
+                    <a href="/signup" id="signup-link">Inscription</a>
+                    <a href="#" id="logout-link" style="display:none;">Déconnexion</a>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>Nos Activités</h1>
+        
+        <div id="activities-list" class="activities-list">
+            <!-- Activities will be dynamically loaded here -->
+            <div id="loading-message">Chargement des activités...</div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 BDD - Bureau du Développement Durable</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const activitiesList = document.getElementById('activities-list');
+            const loadingMessage = document.getElementById('loading-message');
+
+            function formatDate(dateString) {
+                return new Date(dateString).toLocaleDateString('fr-FR', {
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric'
+                });
+            }
+
+            function registerForActivity(activityId) {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Vous devez être connecté pour vous inscrire à une activité');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                fetch(`/api/activities/${activityId}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Erreur lors de l\'inscription');
+                    }
+                    alert('Inscription réussie !');
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert(error.message);
+                });
+            }
+
+            fetch('/api/activities')
+                .then(response => response.json())
+                .then(data => {
+                    loadingMessage.style.display = 'none';
+                    
+                    if (data.activities.length === 0) {
+                        activitiesList.innerHTML = '<p>Aucune activité disponible pour le moment.</p>';
+                        return;
+                    }
+
+                    const activitiesHTML = data.activities.map(activity => `
+                        <div class="card">
+                            <img src="${activity.image_path}" alt="${activity.title}" class="card-img">
+                            <div class="card-body">
+                                <h3 class="card-title">${activity.title}</h3>
+                                <p class="card-text">${activity.description}</p>
+                                <div class="activity-details">
+                                    <div class="activity-meta">
+                                        <strong>Lieu :</strong> ${activity.location}
+                                    </div>
+                                    <div class="activity-meta">
+                                        <strong>Date :</strong> ${formatDate(activity.start_date)}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <span class="badge badge-success">${activity.eco_points} points</span>
+                                <button onclick="registerForActivity(${activity.id})" class="btn btn-sm">S'inscrire</button>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    activitiesList.innerHTML = activitiesHTML;
+                })
+                .catch(error => {
+                    loadingMessage.textContent = 'Erreur de chargement des activités. Veuillez réessayer.';
+                    console.error('Erreur:', error);
+                });
+        });
+    </script>
+</body>
+</html>

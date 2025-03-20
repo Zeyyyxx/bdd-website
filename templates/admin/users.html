@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des utilisateurs</title>
+    <!-- Css a mettre -->
+</head>
+<body>
+    <header>
+        <h1>Gestion des utilisateurs</h1>
+        <nav>
+            <ul>
+                <li><a href="/admin/dashboard">Retour au tableau de bord</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Liste des utilisateurs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Utilisateur 1</td>
+                    <td>utilisateur1@mail.com</td>
+                    <td>Admin</td>
+                    <td>
+                        <a href="/admin/users/edit/1">Modifier</a>
+                        <a href="/admin/users/delete/1">Supprimer</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Utilisateur 2</td>
+                    <td>utilisateur2@mail.com</td>
+                    <td>Membre</td>
+                    <td>
+                        <a href="/admin/users/edit/2">Modifier</a>
+                        <a href="/admin/users/delete/2">Supprimer</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>
